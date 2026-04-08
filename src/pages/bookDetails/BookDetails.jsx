@@ -10,7 +10,7 @@ const BookDetails = () => {
   const clickedBook = books.find((item) => item.bookId === Number(paramsId));
   // console.log(clickedBook)
 
-  const {handleMarkAsRead} = useContext(BookContext);
+  const { handleMarkAsRead, handleWishList } = useContext(BookContext);
   // console.log(data)
   const {
     bookName,
@@ -86,8 +86,18 @@ const BookDetails = () => {
             </div>
           </div>
           <div className="card-actions gap-4 mt-4">
-            <button className="btn btn-outline text-[#131313] text-base border-gray-400" onClick={() => handleMarkAsRead(clickedBook)}>Mark as Read</button>
-            <button className="btn bg-[#50B1C9] text-white">Add to Wishlist</button>
+            <button
+              className="btn btn-outline text-[#131313] text-base border-gray-400"
+              onClick={() => handleMarkAsRead(clickedBook)}
+            >
+              Mark as Read
+            </button>
+            <button
+              className="btn bg-[#50B1C9] text-white"
+              onClick={() => handleWishList(clickedBook)}
+            >
+              Add to Wishlist
+            </button>
           </div>
         </div>
       </div>
