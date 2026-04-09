@@ -11,19 +11,16 @@ const BookProvider = ({ children }) => {
       (book) => book.bookId === markedBook.bookId,
     );
     if (isExist) {
-      toast.error(`${markedBook.bookName} already exists in the read-book list!`);
+      toast.error(
+        `${markedBook.bookName} already exists in the read-book list!`,
+      );
       return;
     }
-    setMarkAsReadBooks([...markAsReadBooks, markedBook]);
+    setMarkAsReadBooks((prev) => [...prev, markedBook]);
     toast.success(`${markedBook.bookName} added in the read-book list!`);
   };
 
   const handleWishList = (markedBook) => {
-    const isExist = wishList.find((book) => book.bookId === markedBook.bookId);
-    if (isExist) {
-      toast.error(`${markedBook.bookName} already exists in the wish list!`);
-      return;
-    }
     const isExistsInReadList = markAsReadBooks.find(
       (book) => book.bookId === markedBook.bookId,
     );
@@ -31,8 +28,13 @@ const BookProvider = ({ children }) => {
       toast.info(`${markedBook.bookName} is read.`);
       return;
     }
-    setWishList([...wishList, markedBook]);
-    toast.success(`${markedBook.bookName} added in the read-book list!`);
+    const isExist = wishList.find((book) => book.bookId === markedBook.bookId);
+    if (isExist) {
+      toast.error(`${markedBook.bookName} already exists in the wish list!`);
+      return;
+    }
+    setWishList((prev) => [...prev, markedBook]);
+    toast.success(`${markedBook.bookName} added in the wish-book list!`);
   };
 
   const data = {
