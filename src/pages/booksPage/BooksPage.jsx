@@ -10,7 +10,7 @@ const BooksPage = () => {
   const { markAsReadBooks, wishList } = useContext(BookContext);
   const [sortingType, setSortingType] = useState("");
 
-const sortBooks = (books, type) => {
+  const sortBooks = (books, type) => {
     if (!type) return books;
     return [...books].sort((a, b) => {
       if (type === "pages") return a.totalPages - b.totalPages;
@@ -18,10 +18,15 @@ const sortBooks = (books, type) => {
       return 0;
     });
   };
- 
-const sortedReadBooks = useMemo(() => sortBooks(markAsReadBooks, sortingType), [markAsReadBooks, sortingType]);
-const sortedWishList = useMemo(() => sortBooks(wishList, sortingType), [wishList, sortingType]);
 
+  const sortedReadBooks = useMemo(
+    () => sortBooks(markAsReadBooks, sortingType),
+    [markAsReadBooks, sortingType],
+  );
+  const sortedWishList = useMemo(
+    () => sortBooks(wishList, sortingType),
+    [wishList, sortingType],
+  );
 
   return (
     <div className="mt-12 md:mt-20 container mx-auto">
@@ -32,22 +37,27 @@ const sortedWishList = useMemo(() => sortBooks(wishList, sortingType), [wishList
         </TabList>
 
         <TabPanel>
-          {sortedReadBooks.length === 0 && <EmptyCart />}
+          {sortedReadBooks.length === 0 ? (
+            <EmptyCart />
+          ) : (
+            <div className="mt-4 md:mt-6 space-y-3">
+              <Dropdown setSortingType={setSortingType} />
+              {sortedReadBooks.map((book) => (
+                <TabCard key={book.bookId} book={book} />
+              ))}
+            </div>
+          )}
+        </TabPanel>
+        <TabPanel>
+          {sortedWishList.length === 0 ? (<EmptyCart />) : (
+
           <div className="mt-4 md:mt-6 space-y-3">
             <Dropdown setSortingType={setSortingType} />
             {sortedWishList.map((book) => (
               <TabCard key={book.bookId} book={book} />
             ))}
           </div>
-        </TabPanel>
-        <TabPanel>
-          {sortedReadBooks.length === 0 && <EmptyCart />}
-          <Dropdown setSortingType={setSortingType} />
-          <div className="mt-4 md:mt-6 space-y-3">
-            {sortedWishList.map((book) => (
-              <TabCard key={book.bookId} book={book} />
-            ))}
-          </div>
+          )}
         </TabPanel>
       </Tabs>
     </div>
