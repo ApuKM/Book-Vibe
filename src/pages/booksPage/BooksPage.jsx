@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { BookContext } from "../../context/BookContext.js";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
@@ -8,21 +8,20 @@ import Dropdown from "../../components/shared/ui/Dropdown.jsx";
 
 const BooksPage = () => {
   const { markAsReadBooks, wishList } = useContext(BookContext);
-  // console.log(markAsReadBooks, wishList)
   const [sortingType, setSortingType] = useState("");
-  const [filteredReadBooks, setFilteredReadBooks ] = useState(markAsReadBooks);
-  const [filteredWishList, setFilteredWishList] = useState(wishList);
 
-  useEffect(() => {
-    if(sortingType){
-      if(sortingType === "pages"){
-        const sortedReadBooks = [...markAsReadBooks].sort((a, b) => a.totalPages - b.totalPages);
-        const sortedWishBooks = [...wishList].sort((a, b) => a.totalPages - b.totalPages);
-        setFilteredReadBooks(sortedReadBooks);
-        setFilteredWishList(sortedWishBooks);
-      }
-    }
-  }, [sortingType, markAsReadBooks, wishList])
+const sortBooks = (books, type) => {
+    if (!type) return books;
+    return [...books].sort((a, b) => {
+      if (type === "pages") return a.totalPages - b.totalPages;
+      if (type === "rating") return a.rating - b.rating;
+      return 0;
+    });
+  };
+ 
+const sortedReadBooks = useMemo(() => sortBooks(markAsReadBooks, sortingType), [markAsReadBooks, sortingType]);
+const sortedWishList = useMemo(() => sortBooks(wishList, sortingType), [wishList, sortingType]);
+
 
   return (
     <div className="mt-12 md:mt-20 container mx-auto">
@@ -33,19 +32,19 @@ const BooksPage = () => {
         </TabList>
 
         <TabPanel>
-          {filteredReadBooks.length === 0 && <EmptyCart />}
+          {sortedReadBooks.length === 0 && <EmptyCart />}
           <div className="mt-4 md:mt-6 space-y-3">
-            <Dropdown setSortingType={setSortingType}/>
-            {filteredReadBooks.map((book) => (
+            <Dropdown setSortingType={setSortingType} />
+            {sortedWishList.map((book) => (
               <TabCard key={book.bookId} book={book} />
             ))}
           </div>
         </TabPanel>
         <TabPanel>
-          {filteredWishList.length === 0 && <EmptyCart />}
-          <Dropdown setSortingType={setSortingType}/>
+          {sortedReadBooks.length === 0 && <EmptyCart />}
+          <Dropdown setSortingType={setSortingType} />
           <div className="mt-4 md:mt-6 space-y-3">
-            {filteredWishList.map((book) => (
+            {sortedWishList.map((book) => (
               <TabCard key={book.bookId} book={book} />
             ))}
           </div>
